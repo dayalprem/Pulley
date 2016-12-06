@@ -21,11 +21,11 @@ import UIKit
 /**
  *  View controllers in the drawer can implement this to receive changes in state or provide values for the different drawer positions.
  */
-public protocol PulleyDrawerViewControllerDelegate: PulleyDelegate {
+@objc public protocol PulleyDrawerViewControllerDelegate: PulleyDelegate {
     
     func collapsedDrawerHeight() -> CGFloat
     func partialRevealDrawerHeight() -> CGFloat
-    func supportedDrawerPositions() -> [PulleyPosition]
+    func supportedDrawerPositions() -> [String]
 }
 
 /**
@@ -44,7 +44,7 @@ public protocol PulleyPrimaryContentControllerDelegate: PulleyDelegate {
  - open:              When the drawer is fully open.
  - closed:            When the drawer is off-screen at the bottom of the view. Note: Users cannot close or reopen the drawer on their own. You must set this programatically
  */
-public enum PulleyPosition: Int {
+@objc public enum PulleyPosition: Int {
     
     case collapsed = 0
     case partiallyRevealed = 1
@@ -618,7 +618,9 @@ open class PulleyViewController: UIViewController, UIScrollViewDelegate, PulleyP
     {
         if let drawerVCCompliant = drawerContentViewController as? PulleyDrawerViewControllerDelegate
         {
-            supportedDrawerPositions = drawerVCCompliant.supportedDrawerPositions()
+            supportedDrawerPositions = drawerVCCompliant.supportedDrawerPositions().map({ (pos) -> PulleyPosition in
+				PulleyPosition.positionFor(string: pos)
+			})
         }
         else
         {
